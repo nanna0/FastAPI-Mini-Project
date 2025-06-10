@@ -28,14 +28,23 @@
 ## 📁 프로젝트 구조
 📦project-root/
 ┣ 📄 main.py # FastAPI 메인 앱
+
 ┣ 📄 models.py # 데이터 모델
+
 ┣ 📄 utils.py # JWT 및 해시 유틸
+
 ┣ 📄 .env # 환경 변수 파일 (OPENAI_API_KEY 등)
+
 ┣ 📄 templates/
+
 ┃ ┗ 📄 chat.html # 채팅 UI
+
 ┣ 📄 static/
+
 ┃ ┣ 📄 style.css # CSS 스타일
+
 ┃ ┗ 📄 app.js # JS 로직
+
 ┗ 📄 README.md
 
 ## 🔑 핵심 기능
