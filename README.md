@@ -27,6 +27,7 @@
 
 ## 📁 프로젝트 구조
 📦project-root/
+
 ┣ 📄 main.py # FastAPI 메인 앱
 
 ┣ 📄 models.py # 데이터 모델
