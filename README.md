@@ -48,6 +48,44 @@
 
 ┗ 📄 README.md
 
+## ⚙️ 실행 방법
+```
+uvicorn main:app --reload
+```
+접속: http://127.0.0.1:8000
+
+## WBS (Work Breakdown Structure)
+```
+gantt
+    title FastAPI ChatGPT Mini Project WBS (일정 기반)
+    dateFormat  YYYY-MM-DD
+    section 프로젝트 초기 설정
+    레포 생성, GSheet 기록        :done, task1, 2025-06-10, 1h
+    ├─ 레포지토리 생성             :done, sub1, 2025-06-10, 0.1h
+    ├─ 주제 확정 & WBS 작성        :done, sub2, 2025-06-10, 0.4h
+    └─ 와이어프레임 작성           :done, sub3, 2025-06-10, 0.5h
+
+    section 백엔드 환경 설정
+    Python, FastAPI, DB, CORS      :active, task2, 2025-06-10 1.5h
+    ├─ 가상환경 + FastAPI 세팅     :sub4, 2025-06-10, 0.5h
+    ├─ DB 모델 설계 및 마이그레이션 :sub5, 2025-06-10, 0.5h
+    └─ CORS 설정                   :sub6, 2025-06-10, 0.5h
+
+    section API 및 인증 기능 설계
+    API 구조 정리                 :task3, 2025-06-10, 1h
+    ├─ 엔드포인트 목록 작성        :sub7, 2025-06-10, 0.5h
+    └─ OpenAPI 문서 확인          :sub8, 2025-06-10, 0.5h
+
+    section 로그인/회원가입 기능
+    JWT 기반 인증 구현            :task4, 2025-06-11, 4h
+    ├─ 비밀번호 해시 및 검증      :sub9, 2025-06-11, 0.5h
+    ├─ JWT 토큰 생성/검증        :sub10, 2025-06-11, 1h
+    ├─ /register 엔드포인트 구현  :sub11, 2025-06-11, 0.5h
+    ├─ /login 엔드포인트 구현     :sub12, 2025-06-11, 0.5h
+    ├─ 인증 데코레이터 구성       :sub13, 2025-06-11, 0.5h
+    └─ /me, /chat 보호 설정       :sub14, 2025-06-11, 1h
+
+```
 ## 🔑 핵심 기능
 - 사용자 회원가입 및 로그인 (JWT 기반)
 - 로그인된 사용자만 채팅 가능
