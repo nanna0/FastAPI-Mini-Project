@@ -19,9 +19,8 @@
 |----------|------|
 | Backend  | FastAPI, Uvicorn, Pydantic, Python|
 | Frontend | HTML, CSS, JavaScript |
-| API      | OpenAI ChatGPT (gpt-3.5-turbo) |
+| API      | OpenAI ChatGPT|
 | Auth     | JWT (python-jose), bcrypt |
-| ETC      | dotenv, passlib |
 
 ---
 
