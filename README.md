@@ -33,6 +33,8 @@
 ┣ 📄 models.py # 모델 정의
 ┣ 📁 static
 ┃ ┗ 📄 index.html
+┃ ┗ 📄 style.css
+┃ ┗ 📄 script.js
 ┗ 📄 README.md
 ```
 ## ⚙️ 실행 방법
