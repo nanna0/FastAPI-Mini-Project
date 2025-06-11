@@ -46,7 +46,7 @@
             cursor: not-allowed;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="email"] { /* input[type="email"] 추가 (필요시) */
             padding: 10px 12px;
             width: calc(100% - 24px);
             max-width: 300px;
@@ -131,33 +131,31 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8000'; // FastAPI 서버 주소
-        let accessToken = null; // JWT 토큰을 저장할 변수
+        const API_BASE_URL = 'http://localhost:8000';
+        let accessToken = null;
+        let currentUsername = null; // 현재 로그인된 사용자 이름 저장
 
         // --- UI 요소 선택 ---
         const authSection = document.getElementById('auth-section');
         const chatSection = document.getElementById('chat-section');
 
-        // 탭 버튼 및 폼
         const showLoginButton = document.getElementById('show-login');
         const showRegisterButton = document.getElementById('show-register');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
 
-        // 로그인 폼 요소
         const loginUsernameInput = document.getElementById('loginUsername');
         const loginPasswordInput = document.getElementById('loginPassword');
         const loginButton = document.getElementById('loginButton');
         const loginStatus = document.getElementById('loginStatus');
 
-        // 회원가입 폼 요소
         const registerUsernameInput = document.getElementById('registerUsername');
         const registerPasswordInput = document.getElementById('registerPassword');
         const registerPasswordConfirmInput = document.getElementById('registerPasswordConfirm');
+        // const registerEmailInput = document.getElementById('registerEmail'); // HTML에서 제거되었으므로, JS에서도 제거
         const registerButton = document.getElementById('registerButton');
         const registerStatus = document.getElementById('registerStatus');
 
-        // 채팅 섹션 요소
         const loggedInUser = document.getElementById('loggedInUser');
         const chatWindow = document.getElementById('chat-window');
         const chatInput = document.getElementById('chatInput');
@@ -167,24 +165,19 @@
 
         // --- 탭 전환 기능 ---
         function showAuthForm(formId) {
-            // 모든 폼 숨김
             document.querySelectorAll('.form-section').forEach(form => {
                 form.classList.remove('active');
             });
-            // 선택된 폼만 표시
             document.getElementById(formId).classList.add('active');
 
-            // 모든 탭 버튼 비활성화
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active');
             });
-            // 선택된 탭 버튼 활성화
             if (formId === 'login-form') {
                 showLoginButton.classList.add('active');
             } else {
                 showRegisterButton.classList.add('active');
             }
-            // 상태 메시지 초기화
             loginStatus.textContent = '';
             registerStatus.textContent = '';
         }
@@ -200,19 +193,19 @@
             msgDiv.classList.add('message', type);
             msgDiv.textContent = `${sender}: ${message}`;
             chatWindow.appendChild(msgDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight; // 스크롤 하단으로 이동
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
         // --- 채팅 UI (입력 필드/버튼) 활성화/비활성화 함수 ---
         function setChatUIEnabled(enabled) {
-            chatInput.disabled = !enabled; // enabled가 true면 disabled=false (활성화), false면 disabled=true (비활성화)
+            chatInput.disabled = !enabled;
             sendButton.disabled = !enabled;
             if (enabled) {
-                sendButton.textContent = '전송'; // 버튼 텍스트 복원
-                chatStatus.textContent = ''; // 상태 메시지 지우기
+                sendButton.textContent = '전송';
+                chatStatus.textContent = '';
             } else {
-                sendButton.textContent = '전송 중...'; // 버튼 텍스트 변경
-                chatStatus.textContent = 'AI 응답 대기 중...'; // 상태 메시지 설정
+                sendButton.textContent = '전송 중...';
+                chatStatus.textContent = 'AI 응답 대기 중...';
             }
         }
 
@@ -220,15 +213,13 @@
         loginButton.addEventListener('click', async () => {
             const username = loginUsernameInput.value.trim();
             const password = loginPasswordInput.value;
-            loginStatus.textContent = ''; // 이전 상태 메시지 초기화
+            loginStatus.textContent = '';
 
-            // 필수 입력 필드 확인
             if (!username || !password) {
                 loginStatus.textContent = '사용자 이름과 비밀번호를 입력해주세요.';
                 return;
             }
 
-            // 요청 본문 (URLSearchParams는 form-urlencoded 형식에 사용)
             const formData = new URLSearchParams();
             formData.append('username', username);
             formData.append('password', password);
@@ -237,7 +228,7 @@
                 const response = await fetch(`${API_BASE_URL}/token`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded' // OAuth2PasswordRequestForm에 맞는 헤더
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: formData.toString()
                 });
@@ -248,14 +239,16 @@
                 }
 
                 const data = await response.json();
-                accessToken = data.access_token; // 받은 토큰 저장
-                localStorage.setItem('accessToken', accessToken); // 로컬 스토리지에 토큰 저장 (새로고침 시 유지)
-                localStorage.setItem('username', username); // 사용자 이름도 저장
+                accessToken = data.access_token;
+                currentUsername = username; // 로그인 성공 시 사용자 이름 저장
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('username', currentUsername);
 
-                loggedInUser.textContent = username; // UI에 로그인된 사용자 이름 표시
-                authSection.style.display = 'none'; // 인증 섹션 숨김
-                chatSection.style.display = 'block'; // 채팅 섹션 표시
-                addMessage('System', '로그인 성공! 채팅을 시작하세요.', 'system-message');
+                loggedInUser.textContent = currentUsername;
+                authSection.style.display = 'none';
+                chatSection.style.display = 'block';
+                addMessage('System', '로그인 성공! 채팅 기록을 불러오는 중...', 'system-message');
+                await loadChatHistory(); // 로그인 성공 시 채팅 기록 불러오기
 
             } catch (error) {
                 loginStatus.textContent = `로그인 오류: ${error.message}`;
@@ -263,19 +256,18 @@
             }
         });
 
-        // --- 회원가입 처리 ---
+        // --- 회원가입 처리 (registerEmailInput 제거 반영) ---
         registerButton.addEventListener('click', async () => {
             const username = registerUsernameInput.value.trim();
             const password = registerPasswordInput.value;
             const passwordConfirm = registerPasswordConfirmInput.value;
-            registerStatus.textContent = ''; // 이전 상태 메시지 초기화
+            // const email = registerEmailInput.value.trim(); // HTML에서 제거되었으므로, 이 줄도 제거
+            registerStatus.textContent = '';
 
-            // 필수 입력 필드 확인
             if (!username || !password || !passwordConfirm) {
                 registerStatus.textContent = '사용자 이름과 비밀번호를 입력해주세요.';
                 return;
             }
-            // 비밀번호 일치 여부 확인
             if (password !== passwordConfirm) {
                 registerStatus.textContent = '비밀번호가 일치하지 않습니다.';
                 return;
@@ -285,11 +277,12 @@
                 const response = await fetch(`${API_BASE_URL}/register`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json' // 회원가입 요청은 JSON 형식
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         username: username,
                         password: password
+                        // email: email || null // HTML에서 제거되었으므로, 이 줄도 제거
                     })
                 });
 
@@ -301,11 +294,11 @@
                 const data = await response.json();
                 registerStatus.style.color = 'green';
                 registerStatus.textContent = `회원가입 성공: ${data.username}님 환영합니다! 이제 로그인해주세요.`;
-                // 회원가입 성공 후 입력 필드 초기화
                 registerUsernameInput.value = '';
                 registerPasswordInput.value = '';
                 registerPasswordConfirmInput.value = '';
-                showAuthForm('login-form'); // 로그인 폼으로 자동 전환
+                // registerEmailInput.value = ''; // HTML에서 제거되었으므로, 이 줄도 제거
+                showAuthForm('login-form');
 
             } catch (error) {
                 registerStatus.style.color = 'red';
@@ -314,13 +307,89 @@
             }
         });
 
+        // --- 채팅 메시지 저장 함수 (이 함수는 이제 프론트엔드에서 직접 호출되지 않음. 백엔드에서만 사용) ---
+        // 백엔드에서 메시지를 저장하므로, 프론트엔드에서 saveChatMessage를 직접 호출할 필요가 없습니다.
+        // 이 함수 자체는 필요하지만, 프론트엔드 코드에서는 호출되지 않습니다.
+        async function saveChatMessage(role, content) {
+            if (!accessToken || !currentUsername) {
+                console.warn("로그인되지 않아 채팅 메시지를 저장할 수 없습니다.");
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        username: currentUsername,
+                        role: role,
+                        content: content,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('채팅 기록 저장 실패:', errorData.detail || '알 수 없는 오류');
+                }
+            } catch (error) {
+                console.error('채팅 기록 저장 중 네트워크 오류:', error);
+            }
+        }
 
-        // --- 채팅 메시지 전송 (기존과 동일) ---
+
+        // --- 채팅 기록 불러오기 함수 (기존 로직 유지) ---
+        async function loadChatHistory() {
+            chatWindow.innerHTML = ''; // 기존 채팅창 비우기
+            if (!accessToken || !currentUsername) {
+                addMessage('System', '채팅 기록을 불러올 수 없습니다. 로그인해주세요.', 'system-message');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat/history`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('인증 실패. 다시 로그인해주세요.');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || '채팅 기록 불러오기 실패');
+                }
+
+                const data = await response.json();
+                if (data.history && data.history.length > 0) {
+                    addMessage('System', '이전 채팅 기록을 불러왔습니다.', 'system-message');
+                    data.history.forEach(msg => {
+                        const sender = msg.role === 'user' ? 'You' : 'AI';
+                        const type = msg.role === 'user' ? 'user-message' : 'ai-message';
+                        addMessage(sender, msg.content, type);
+                    });
+                } else {
+                    addMessage('System', '이전 채팅 기록이 없습니다. 새로운 대화를 시작하세요!', 'system-message');
+                }
+
+            } catch (error) {
+                chatStatus.textContent = `채팅 기록 불러오기 오류: ${error.message}`;
+                console.error('채팅 기록 불러오기 에러:', error);
+                if (error.message.includes('인증 실패')) {
+                    handleLogout();
+                }
+            }
+        }
+
+        // --- 채팅 메시지 전송 (저장 로직은 백엔드에서만 처리) ---
         sendButton.addEventListener('click', async () => {
             const message = chatInput.value.trim();
             if (!message) return;
 
-            addMessage('You', message, 'user-message');
+            addMessage('You', message, 'user-message'); // 사용자 메시지는 즉시 UI에 표시
             chatInput.value = '';
 
             setChatUIEnabled(false); // 전송 중 UI 비활성화
@@ -344,51 +413,57 @@
                 }
 
                 const data = await response.json();
-                addMessage('AI', data.response, 'ai-message');
+                const aiResponseContent = data.response;
+
+                addMessage('AI', aiResponseContent, 'ai-message'); // AI 응답 메시지는 UI에 표시
 
             } catch (error) {
                 chatStatus.textContent = `채팅 오류: ${error.message}`;
                 console.error('채팅 에러:', error);
                 if (error.message.includes('인증 실패')) {
-                    handleLogout(); // 인증 실패 시 로그아웃 처리
+                    handleLogout();
                 }
             } finally {
                 setChatUIEnabled(true); // 요청 완료 후 UI 활성화
             }
         });
 
-        // --- 로그아웃 처리 (기존과 동일) ---
+        // --- 로그아웃 처리 ---
         logoutButton.addEventListener('click', handleLogout);
 
         function handleLogout() {
             accessToken = null;
-            localStorage.removeItem('accessToken'); // 로컬 스토리지에서 토큰 제거
-            localStorage.removeItem('username'); // 사용자 이름 제거
-            authSection.style.display = 'block'; // 인증 섹션 표시
-            chatSection.style.display = 'none'; // 채팅 섹션 숨김
-            chatWindow.innerHTML = ''; // 채팅창 내용 초기화
-            loginUsernameInput.value = ''; // 로그인 필드 초기화
+            currentUsername = null; // 사용자 이름도 초기화
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('username');
+            authSection.style.display = 'block';
+            chatSection.style.display = 'none';
+            chatWindow.innerHTML = '';
+            loginUsernameInput.value = '';
             loginPasswordInput.value = '';
-            registerUsernameInput.value = ''; // 회원가입 필드 초기화
+            registerUsernameInput.value = '';
             registerPasswordInput.value = '';
             registerPasswordConfirmInput.value = '';
+            // registerEmailInput.value = ''; // HTML에서 제거되었으므로, 이 줄도 제거
             loginStatus.textContent = '로그아웃 되었습니다.';
             chatStatus.textContent = '';
-            showAuthForm('login-form'); // 로그아웃 후 로그인 폼으로 전환
+            showAuthForm('login-form');
         }
 
-        // --- 페이지 로드 시 초기화 ---
-        window.onload = () => {
+        // --- 페이지 로드 시 초기화 및 자동 로그인 시도 ---
+        window.onload = async () => { // async 키워드 추가
             const storedToken = localStorage.getItem('accessToken');
             const storedUsername = localStorage.getItem('username');
             if (storedToken && storedUsername) {
                 accessToken = storedToken;
-                loggedInUser.textContent = storedUsername;
+                currentUsername = storedUsername; // 로컬 스토리지에서 사용자 이름 로드
+                loggedInUser.textContent = currentUsername;
                 authSection.style.display = 'none';
                 chatSection.style.display = 'block';
-                addMessage('System', '이전 세션으로 로그인되었습니다. 채팅을 시작하세요.', 'system-message');
+                // 로그인 후 채팅 기록을 바로 불러옵니다.
+                await loadChatHistory();
             } else {
-                showAuthForm('login-form'); // 토큰 없으면 로그인 폼 보여주기
+                showAuthForm('login-form');
             }
         };
 

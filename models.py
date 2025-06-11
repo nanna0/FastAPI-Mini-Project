@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel
 from typing import List, Dict, Union
+from datetime import datetime
 
 # 사용자 관련 모델
 class UserInDB(BaseModel):
@@ -35,3 +36,13 @@ class ConversationRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     usage: Dict
+
+# 채팅 기록 모델
+class ChatMessage(BaseModel):
+    username: str
+    role: str
+    content: str
+    timestamp: datetime = datetime.now() # 채팅 시간 기록 (메세지 생성된 시간)
+
+class ChatHistoryResponse(BaseModel):
+    history: List[ChatMessage] # ChatMessage 객체의 리스트

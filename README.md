@@ -28,8 +28,10 @@
 ```cpp
 📦project-root/
 
+┣ 📄 auth.py # 로그인, 유저관리 
 ┣ 📄 main.py # FastAPI 메인 앱
-┣ 📄 templates/
+┣ 📄 models.py # 모델 정의
+┣ 📁 static
 ┃ ┗ 📄 index.html
 ┗ 📄 README.md
 ```
