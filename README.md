@@ -41,7 +41,8 @@
 ```
 uvicorn main:app --reload
 ```
-접속: http://127.0.0.1:8000
+서버접속: http://127.0.0.1:8000
+실행화면 접속: http://127.0.0.1:5500/FastAPI-Mini-Project/static/index.html
 
 ## WBS (Work Breakdown Structure)
 ```
