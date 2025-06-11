@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import httpx
 from typing import List, Dict
 from dotenv import load_dotenv
@@ -28,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/static", StaticFiles(directory="static"), name="static") # static 파일 연결
 
 BOOTCAMP_API_URL = os.getenv("BOOTCAMP_API_URL", "https://dev.wenivops.co.kr/services/openai-api")
 
@@ -39,6 +41,7 @@ fake_chat_db: Dict[str, List[ChatMessage]] = defaultdict(list)
 
 @app.get("/", summary="서버 상태 확인")
 async def root():
+    from fastapi.responses import FileResponse
     return {"message": "부트캠프 ChatGPT API 서버가 실행 중입니다"}
 
 async def call_bootcamp_api(messages: List[Dict]) -> Dict:
