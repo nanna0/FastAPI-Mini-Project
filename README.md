@@ -56,7 +56,7 @@ gantt
     └─ 와이어프레임 작성            :sub3, 2025-06-10, 0.5h
 
     section 백엔드 환경 설정
-    Python, FastAPI, DB, CORS       :task2, 2025-06-10 1.5h
+    Python, FastAPI, DB, CORS       :task2, 2025-06-10 3h
     ├─ Python 가상환경 생성 및 활성화    :sub4, 2025-06-10, 0.5h
     ├─ FastAPI 기본 세팅              :sub5, 2025-06-10, 1h
     ├─ CROS 설정                     :sub6, 2025-06-10, 1h
@@ -69,7 +69,7 @@ gantt
     └─ API 연동, 챗봇 기능 구현, 예외처리     :sub9 2025-06-10 2h
 
     section 로그인/회원가입 기능
-    JWT 기반 인증 구현                  :task4, 2025-06-11, 5h
+    JWT 기반 인증 구현                  :task4, 2025-06-11, 6h
     ├─ JWT 토큰 생성/검증               :sub10, 2025-06-11, 1h
     ├─ 사용자 모델, 로그인 관리 구현        :sub11, 2025-06-11, 1h
     ├─ /register 엔드포인트 구현        :sub12, 2025-06-11, 0.5h
